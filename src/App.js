@@ -2,13 +2,11 @@ import React from "react";
 import Header from "./components/Header";
 import SidebarMenu from "./components/SidebarMenu";
 import Title from "./components/Title";
+import Footer from "./components/Footer";
 import { CommitsContextProvider } from "./context";
 
 function App() {
-  const commits = [
-    // { id: 1, name: "John" },
-    // { id: 2, name: "Joanna" },
-  ];
+  const commits = [];
   return (
     <div className="app">
       <CommitsContextProvider commits={commits}>
@@ -16,6 +14,7 @@ function App() {
         <div className="main">
           <SidebarMenu />
           <Title />
+          <Footer />
         </div>
       </CommitsContextProvider>
     </div>
