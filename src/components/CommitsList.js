@@ -1,13 +1,63 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { CommitsContext } from "../context";
-import loading from "../images/loading.png";
 
 function CommitsList() {
-  let currentOffset = 0;
-  const [pokemon, setPokemon] = useState([]);
-
   const commitsContext = useContext(CommitsContext);
-  const { commits, error } = commitsContext;
+  const { url } = commitsContext;
+  const [commits, setCommits] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [error, setError] = useState(null);
+  const [targetElement, setTargetElement] = useState(null);
+  const prevY = useRef(0);
+
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0,
+  };
+
+  const handleObserver = (entities, observer) => {
+    const y = entities[0].boundingClientRect.y;
+
+    if (prevY.current > y) {
+      fetchCommits();
+    }
+
+    prevY.current = y;
+  };
+
+  const observer = useRef(new IntersectionObserver(handleObserver, options));
+
+  useEffect(() => {
+    if (url != "") {
+      fetchCommits();
+    }
+  }, [url]);
+
+  useEffect(() => {
+    if (targetElement) {
+      observer.current.observe(targetElement);
+    }
+  }, [targetElement]);
+
+  const fetchCommits = () => {
+    console.log("fetch url", url);
+    setIsLoading(true);
+    fetch(`https://api.github.com/repos/${url}/commits?per_page=9`)
+      .then((data) => data.json())
+      .then((data) => {
+        setCommits((commits) => [...commits, ...data]);
+        setIsFirstLoad(false);
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        alert(
+          "Loading image from Unsplash failed. This is likely due to exceeding free API limit. Please clone the repo and try locally using your own API keys or come back in 60 minutes."
+        );
+        setError(e);
+      });
+  };
 
   function truncate(str) {
     return str.length > 10 ? str.substring(0, 60) + "..." : str;
@@ -35,36 +85,8 @@ function CommitsList() {
     }
   }
 
-  const loadCommits = () => {
-    const tenPokemon = [];
-
-    fetch(`https://api.github.com/repos/jquery/jquery/commits?per_page=9`)
-      .then((response) => response.json())
-      .then((data) => {
-        data.forEach((p) => tenPokemon.push(p));
-        setPokemon((pokemon) => [...pokemon, ...tenPokemon]);
-      });
-    currentOffset += 9;
-  };
-
-  const handleScroll = (e) => {
-    const scrollHeight = e.target.documentElement.scrollHeight;
-    const currentHeight = Math.ceil(
-      e.target.documentElement.scrollTop + window.innerHeight
-    );
-    if (currentHeight + 1 >= scrollHeight) {
-      console.log("current height", currentHeight);
-      console.log("scroll height", scrollHeight);
-      setTimeout(() => {
-        loadCommits();
-      }, 2000);
-    }
-  };
-
-  useEffect(() => {
-    loadCommits();
-    window.addEventListener("scroll", handleScroll);
-  }, []);
+  console.log("url", url);
+  console.log("error", error);
 
   return (
     <div className="commits-list">
@@ -78,8 +100,8 @@ function CommitsList() {
         )}
       </div>
       <div className="container">
-        {pokemon.length !== 0 ? (
-          <>
+        {commits.length !== 0 ? (
+          <div className="table-fix-head">
             <table>
               <thead>
                 <tr>
@@ -90,8 +112,8 @@ function CommitsList() {
                 </tr>
               </thead>
               <tbody>
-                {pokemon.map((commit) => (
-                  <tr key={commit.sha}>
+                {commits.map((commit, index) => (
+                  <tr key={index}>
                     <td className="author">
                       <img src={commit.author.avatar_url} />
                       {commit.commit.author.name}
@@ -105,13 +127,45 @@ function CommitsList() {
                     </td>
                   </tr>
                 ))}
+                <tr>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                </tr>
+                <tr
+                  style={isLoading ? { display: "none" } : null}
+                  ref={setTargetElement}
+                >
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                  <td>
+                    <div className="placeholder"></div>
+                  </td>
+                </tr>
               </tbody>
             </table>
-            <img src={loading} style={{ width: "100%" }} />
-          </>
+          </div>
         ) : (
           <div className="table">
-            <h5>{error != "" ? error : "Your commits will show up here"}</h5>
+            <h5>
+              {error || error == "" ? error : "Your commits will show up here"}
+            </h5>
           </div>
         )}
       </div>

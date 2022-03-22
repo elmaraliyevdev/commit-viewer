@@ -3,22 +3,17 @@ import logo from "../images/codacy-logo.png";
 import { CommitsContext } from "../context";
 
 function Header() {
-  const [url, setUrl] = useState("");
-  const { setCommits, setError } = useContext(CommitsContext);
+  const [commitsUrl, setCommitsUrl] = useState("");
+  const { setUrl } = useContext(CommitsContext);
 
   function handleSubmit(event) {
     event.preventDefault();
-    const repo = url.substring(url.indexOf("m/") + 2);
+    const repo = commitsUrl.substring(commitsUrl.indexOf("m/") + 2);
 
-    fetch(`https://api.github.com/repos/${repo}/commits?per_page=9`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCommits(data);
-      })
-      .catch((error) => {
-        setError("We couldn’t get the commits for this repository");
-      });
+    setUrl(repo);
   }
+
+  console.log("commits url", commitsUrl);
 
   return (
     <header>
@@ -27,9 +22,9 @@ function Header() {
         <label>Repository URL</label>
         <input
           type="text"
-          value={url}
+          value={commitsUrl}
           placeholder="Add your repository URL here"
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e) => setCommitsUrl(e.target.value)}
         />
         <input type="submit" value="Load Commits" />
       </form>

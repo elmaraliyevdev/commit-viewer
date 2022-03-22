@@ -5,18 +5,15 @@ export const Context = createContext({});
 
 export const Provider = (props) => {
   // Initial values are obtained from the props
-  const { commits: initialCommits, error: initialError, children } = props;
+  const { url: initialUrl, children } = props;
 
   // Use State to keep the values
-  const [commits, setCommits] = useState(initialCommits);
-  const [error, setError] = useState(initialError);
+  const [url, setUrl] = useState(initialUrl);
 
   // Make the context object:
   const commitsContext = {
-    commits,
-    error,
-    setCommits,
-    setError,
+    url,
+    setUrl,
   };
 
   // pass the value in provider and return
@@ -26,11 +23,9 @@ export const Provider = (props) => {
 export const { Consumer } = Context;
 
 Provider.propTypes = {
-  commits: PropTypes.array,
-  error: PropTypes.string,
+  url: PropTypes.string,
 };
 
 Provider.defaultProps = {
-  commits: [],
-  error: "",
+  url: "",
 };

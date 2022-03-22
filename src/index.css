@@ -17,6 +17,13 @@ body {
   padding: 0px;
 }
 
+.placeholder {
+  background-color: #e5ecf5;
+  margin: 0 10px;
+  border-radius: 5px;
+  height: 10px;
+}
+
 .title-container {
   background-color: #f4f9ff;
   padding: 50px 100px 0px 100px;
@@ -54,7 +61,27 @@ body {
   font-size: 14px;
 }
 
+.table-fix-head {
+  overflow-y: auto;
+  height: 360px;
+}
+
 table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  border-bottom: 2px solid #e5ecf5;
+}
+
+table th {
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+}
+
+tbody {
   width: 100%;
 }
 
@@ -114,6 +141,7 @@ table th {
 
 .container {
   padding: 50px 100px;
+  height: 360px;
 }
 
 h1 {

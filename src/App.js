@@ -6,11 +6,10 @@ import Footer from "./components/Footer";
 import { CommitsContextProvider } from "./context";
 
 function App() {
-  const commits = [];
-  const error = "";
+  const url = "";
   return (
     <div className="app">
-      <CommitsContextProvider commits={commits}>
+      <CommitsContextProvider url={url}>
         <Header />
         <div className="main">
           <SidebarMenu />
